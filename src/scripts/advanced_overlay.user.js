@@ -69,6 +69,14 @@
     }
   }
 
+  /**
+   * Creates the canvas image that is shown on top of the canvas.
+   * 
+   * @param {HTMLElement} positionContainer The container that holds the canvas
+   * @param {Object} state The state object
+   * @returns {HTMLImageElement} The canvas cover image
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement
+   */
   function createCanvasCoverImage(positionContainer, state) {
     const CANVAS_STYLE = {
       ...CANVAS_STYLE_DIMENSIONS,
