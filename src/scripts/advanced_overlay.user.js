@@ -11,9 +11,8 @@
 // @grant        none
 // ==/UserScript==
 
-let width = '2000px';
-let height = '1500px';
-var button = null;
+let CANVAS_WIDTH = '2000px';
+let CANVAS_HEIGHT = '1500px';
 
 if (window.top !== window.self) {
   addEventListener('load', () => {
@@ -48,8 +47,8 @@ if (window.top !== window.self) {
     img.style.opacity = oState.opacity;
     img.style.top = '0px';
     img.style.left = '0px';
-    img.style.width = width;
-    img.style.height = height;
+    img.style.width = CANVAS_WIDTH;
+    img.style.height = CANVAS_HEIGHT;
     img.style.zIndex = '100';
     img.onload = () => {
       console.log('loaded');
