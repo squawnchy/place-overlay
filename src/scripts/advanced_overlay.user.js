@@ -25,7 +25,6 @@
   const CANVAS_MAIN_CONTAINER_SELECTOR = "garlic-bread-embed";
   const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = "garlic-bread-canvas";
   const STORAGE_KEY = "place-germany-2023-ostate";
-  const CANVAS_STYLE_DIMENSIONS = { width: "2000px", height: "1500px" };
   const SWITCHER_BUTTON_POSITION = { bottom: "25px", right: "25px" };
 
   // [overlayURL, overlayName]
@@ -99,7 +98,6 @@
    */
   function createOverlayImage(state) {
     const CANVAS_STYLE = {
-      ...CANVAS_STYLE_DIMENSIONS,
       pointerEvents: "none",
       imageRendering: "pixelated",
       top: "0px",
