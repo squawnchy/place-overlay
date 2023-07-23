@@ -11,182 +11,163 @@
 // @grant        none
 // ==/UserScript==
 
-const CANVAS_MAIN_CONTAINER_SELECTOR = 'garlic-bread-embed';
-const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = 'garlic-bread-canvas';
+(function() {
+  'use strict';
 
-const CANVAS_STYLE = {
-  pointerEvents: 'none',
-  position: 'absolute',
-  imageRendering: 'pixelated',
-  top: '0px',
-  left: '0px',
-  width: '2000px',
-  height: '1500px',
-  zIndex: '100',
-};
+  const CANVAS_MAIN_CONTAINER_SELECTOR = 'garlic-bread-embed';
+  const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = 'garlic-bread-canvas';
 
-const SWITCHER_BUTTON_WRAPPER_STYLE = {
-  position: 'absolute',
-  bottom: '25px',
-  right: '25px',
-};
+  const CANVAS_STYLE = Object.freeze({
+    pointerEvents: 'none',
+    position: 'absolute',
+    imageRendering: 'pixelated',
+    top: '0px',
+    left: '0px',
+    width: '2000px',
+    height: '1500px',
+    zIndex: '100',
+  });
 
-const SWITCHER_BUTTON_STYLE = {
-  width: '100px',
-  height: '65px',
-  backgroundColor: '#555',
-  color: 'white',
-  border: 'var(--pixel-border)',
-  boxShadow: 'var(--pixel-box-shadow)',
-  fontFamily: 'var(--garlic-bread-font-pixel)',
-  backgroundImage: 'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)', // Deutschlandfahne
-};
+  const SWITCHER_BUTTON_WRAPPER_STYLE = Object.freeze({
+    position: 'absolute',
+    bottom: '25px',
+    right: '25px',
+  });
 
-const OPACITY_WRAPPER_STYLE = {
-  width: '100px',
-  height: '45px',
-  backgroundColor: '#555',
-  color: 'white',
-  border: 'var(--pixel-border)',
-  boxShadow: 'var(--pixel-box-shadow)',
-  fontFamily: 'var(--garlic-bread-font-pixel)',
-  marginTop: '15px',
-  textAlign: 'center',
-};
+  const SWITCHER_BUTTON_STYLE = Object.freeze({
+    width: '100px',
+    height: '65px',
+    backgroundColor: '#555',
+    color: 'white',
+    border: 'var(--pixel-border)',
+    boxShadow: 'var(--pixel-box-shadow)',
+    fontFamily: 'var(--garlic-bread-font-pixel)',
+    backgroundImage: 'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)', // Deutschlandfahne
+  });
 
-const OPACITY_SLIDER_STYLE = {
-  webkitAppearance: 'none',
-  appearance: 'none',
-  height: '15px',
-  width: '95px',
-  borderRadius: '5px',
-  background: '#d3d3d3',
-  outline: 'none',
-};
+  const OPACITY_WRAPPER_STYLE = Object.freeze({
+    width: '100px',
+    height: '45px',
+    backgroundColor: '#555',
+    color: 'white',
+    border: 'var(--pixel-border)',
+    boxShadow: 'var(--pixel-box-shadow)',
+    fontFamily: 'var(--garlic-bread-font-pixel)',
+    marginTop: '15px',
+    textAlign: 'center',
+  });
 
+  const OPACITY_SLIDER_STYLE = Object.freeze({
+    webkitAppearance: 'none',
+    appearance: 'none',
+    height: '15px',
+    width: '95px',
+    borderRadius: '5px',
+    background: '#d3d3d3',
+    outline: 'none',
+  });
 
-if (window.top !== window.self) {
-  addEventListener('load', () => {
+  const OVERLAYS = Object.freeze([
+    ['https://place.army/overlay_target.png', 'KLEINE PIXEL'],
+    ['https://place.army/default_target.png', 'GROßE PIXEL'],
+    [null, 'OVERLAY AUS'],
+  ]);
+
+  function applyStyles(element, styles) {
+    for (const [key, value] of Object.entries(styles)) {
+      element.style[key] = value;
+    }
+  }
+
+  function initializeState() {
     const STORAGE_KEY = 'place-germany-2023-ostate';
-    const OVERLAYS = [
-      ['https://place.army/overlay_target.png', 'KLEINE PIXEL'],
-      ['https://place.army/default_target.png', 'GROßE PIXEL'],
-      [null, 'OVERLAY AUS'],
-    ];
-
-    const setStyle = (element, style) => {
-      Object.entries(style).forEach(([key, value]) => {
-        element.style[key] = value;
-      });
-    };
-
-    let oState = {
+    let initialState = {
       opacity: 100,
       overlayIdx: 0,
     };
 
-    const oStateStorage = localStorage.getItem(STORAGE_KEY);
-    if (oStateStorage !== null) {
+    const storedState = localStorage.getItem(STORAGE_KEY);
+    if (storedState !== null) {
       try {
-        oState = Object.assign({}, oState, JSON.parse(oStateStorage));
-      } catch (e) {}
+        initialState = { ...initialState, ...JSON.parse(storedState) };
+      } catch (_) {
+        console.error('Failed to parse stored state');
+      }
     }
+    return [STORAGE_KEY, initialState];
+  }
 
-    const saveState = () => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(oState));
+  function saveState(key, state) {
+    localStorage.setItem(key, JSON.stringify(state));
+  }
+
+  function run() {
+    const [STORAGE_KEY, state] = initializeState();
+  
+    const mainContainer = document
+      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+      .shadowRoot.querySelector('.layout');
+  
+    const positionContainer = mainContainer
+      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
+      .shadowRoot.querySelector('.container');
+  
+    const canvasCoverImage = document.createElement('img');
+    applyStyles(canvasCoverImage, CANVAS_STYLE);
+    canvasCoverImage.onload = () => {
+      canvasCoverImage.style.opacity = state.opacity / 100;
     };
-
-    const incrementOverlayIndex = () => {
-      oState.overlayIdx++;
-      oState.overlayIdx %= OVERLAYS.length;
+    positionContainer.appendChild(canvasCoverImage);
+  
+    const changeOverlay = () => {
+      const [overlayURL] = OVERLAYS[state.overlayIdx];
+      if (overlayURL === null || overlayURL === undefined || overlayURL === '') {
+        canvasCoverImage.style.opacity = 0;
+        return;
+      }
+      canvasCoverImage.style.opacity = state.opacity / 100;
+      canvasCoverImage.src = overlayURL;
     };
-    
-    const initializeSwitchOverlayButton = (switchOverlay) => {
-      const button = document.createElement('button');
-      const setTextToOverlayTitle = () => {
-        const [_, overlayTitle] = OVERLAYS[oState.overlayIdx];
-        button.innerText = overlayTitle;
-      };
-      button.onclick = () => {
-        incrementOverlayIndex();
-        switchOverlay();
-        setTextToOverlayTitle();
-        saveState();
-      };
-      setTextToOverlayTitle();
-      
-      return button;
+  
+    const button = document.createElement('button');
+    applyStyles(button, SWITCHER_BUTTON_STYLE);
+    button.onclick = () => {
+      state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
+      changeOverlay();
+      saveState(STORAGE_KEY, state);
+      button.textContent = OVERLAYS[state.overlayIdx][1];
     };
-    
-    const initializeOpacitySlider = (changeOpacity) => {
-      const opacitySlider = document.createElement('input');
-      opacitySlider.type = 'range';
-      opacitySlider.min = 0;
-      opacitySlider.max = 100;
-      opacitySlider.value = oState.opacity;
-      opacitySlider.oninput = (e) => {
-        oState.opacity = e.target.value;
-        changeOpacity();
-        saveState();
-      };
-      
-      return opacitySlider;
+    button.textContent = OVERLAYS[state.overlayIdx][1];
+  
+    const buttonContainer = document.createElement('div');
+    applyStyles(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
+    buttonContainer.appendChild(button);
+    mainContainer.appendChild(buttonContainer);
+  
+    const sliderContainer = document.createElement('div');
+    sliderContainer.textContent = 'Transparenz';
+    applyStyles(sliderContainer, OPACITY_WRAPPER_STYLE);
+  
+    const opacitySlider = document.createElement('input');
+    opacitySlider.type = 'range';
+    opacitySlider.min = 0;
+    opacitySlider.max = 100;
+    opacitySlider.value = state.opacity;
+    opacitySlider.oninput = () => {
+      state.opacity = opacitySlider.value;
+      changeOverlay();
+      saveState(STORAGE_KEY, state);
     };
-    
-    const run = () => {
-      const canvasCoverImage = document.createElement('img');
-      const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
-      canvasCoverImage.src = overlayURL + '?' + Date.now();
-      setStyle(canvasCoverImage, CANVAS_STYLE);
-      canvasCoverImage.onload = () => {
-        canvasCoverImage.style.opacity = oState.opacity / 100;
-      };
+    applyStyles(opacitySlider, OPACITY_SLIDER_STYLE);
+  
+    sliderContainer.appendChild(opacitySlider);
+    buttonContainer.appendChild(sliderContainer);
+  
+    changeOverlay();
+  }
+  
 
-      const mainContainer = document
-        .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
-        .shadowRoot.querySelector('.layout');
-      const positionContainer = mainContainer
-        .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
-        .shadowRoot.querySelector('.container');
-
-      const buttonContainer = document.createElement('div');
-      setStyle(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
-      
-      const switchOverlay = () => {
-        const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
-        if (
-          overlayURL === null ||
-          overlayURL === undefined ||
-          overlayURL === ''
-        ) {
-          canvasCoverImage.style.opacity = 0;
-        } else {
-          canvasCoverImage.style.opacity = oState.opacity / 100;
-          canvasCoverImage.src = overlayURL + '?' + Date.now();
-        }
-      };
-
-      const updateOverlayOpacity = () => {
-        canvasCoverImage.style.opacity = oState.opacity / 100;
-      };
-      
-      const button = initializeSwitchOverlayButton(switchOverlay);
-      setStyle(button, SWITCHER_BUTTON_STYLE);
-
-      const sliderContainer = document.createElement('div');
-      sliderContainer.innerText = 'Transparenz';
-      setStyle(sliderContainer, OPACITY_WRAPPER_STYLE);
-
-      const slider = initializeOpacitySlider(updateOverlayOpacity);
-      setStyle(slider, OPACITY_SLIDER_STYLE);
-      
-      positionContainer.appendChild(canvasCoverImage);
-      buttonContainer.appendChild(button);
-      sliderContainer.appendChild(slider);
-      buttonContainer.appendChild(sliderContainer);
-      mainContainer.appendChild(buttonContainer);
-    };
-    
-    run();
-  });
-}
+  if (window.top !== window.self) {
+    window.addEventListener('load', run);
+  }
+})();
