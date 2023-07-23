@@ -120,6 +120,13 @@
     return opacitySlider;
   }
 
+  /**
+   * Main function that runs the script. It is called when the page is loaded. It gets the state 
+   * from localStorage, creates the canvas cover image, the switcher button and the opacity 
+   * slider and appends them to the page.
+   * 
+   * @returns {void}
+   */
   function run() {
     const state = getStateFromStorage();
 
