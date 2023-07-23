@@ -102,7 +102,7 @@
   }
 
   function run() {
-    const [STORAGE_KEY, state] = initializeState();
+    let [STORAGE_KEY, state] = initializeState();
   
     const mainContainer = document
       .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
