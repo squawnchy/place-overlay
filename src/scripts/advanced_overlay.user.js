@@ -127,16 +127,16 @@
     const SWITCHER_BUTTON_STYLE = {
       ...SWITCHER_BUTTON_POSITION,
       width: "100px",
-      height: "65px",
-      backgroundColor: "#555",
-      color: "white",
+      height: "85px",
+      backgroundColor: "#fff",
+      color: "black",
       border: "var(--pixel-border)",
       boxShadow: "var(--pixel-box-shadow)",
       fontFamily: "var(--garlic-bread-font-pixel)",
-      backgroundImage:
-        "linear-gradient(to bottom, red, red 14%, orange 14%, orange 28%, yellow 28%, yellow 42%, green 42%, green 57%, blue 57%, blue 71%, indigo 71%, indigo 85%, violet 85%)",
-      backgroundPosition: "0 0",
-      backgroundRepeat: "no-repeat",
+      backgroundImage: 'url(https://static.miraheze.org/greatcharacterswiki/thumb/d/df/Png-transparent-fluttershy-pony-rarity-rainbow-dash-applejack-my-little-pony-mammal-vertebrate-equestria.png/290px-Png-transparent-fluttershy-pony-rarity-rainbow-dash-applejack-my-little-pony-mammal-vertebrate-equestria.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
       cursor: "pointer",
       outline: "none",
     };
