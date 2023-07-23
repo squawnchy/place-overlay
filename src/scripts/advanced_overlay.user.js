@@ -11,6 +11,7 @@
 // @grant        none
 // ==/UserScript==
 
+
 (function () {
   "use strict";
 
@@ -180,11 +181,12 @@
    * @returns {void}
    */
   function run() {
+    // Get state from localStorage or create a new one
+    const state = getStateFromStorage();
+    
     //---------------------------------------------------------------------------------------------
     // Setup canvas cover image
     //---------------------------------------------------------------------------------------------
-    const state = getStateFromStorage();
-
     const mainContainer = document.querySelector(
       CANVAS_MAIN_CONTAINER_SELECTOR
     );
