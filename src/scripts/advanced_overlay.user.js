@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         r/place 2023 Canada Overlay with German tiles
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      1.0
 // @description  Script that adds a button to toggle an hardcoded image shown in the 2023's r/place canvas
 // @author       max-was-here and placeDE Devs
 // @match        https://garlic-bread.reddit.com/embed*
@@ -11,8 +11,19 @@
 // @grant        none
 // ==/UserScript==
 
-const CANVAS_WIDTH = '2000px';
-const CANVAS_HEIGHT = '1500px';
+const CANVAS_MAIN_CONTAINER_SELECTOR = 'garlic-bread-embed';
+const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = 'garlic-bread-canvas';
+
+const CANVAS_STYLE = {
+  pointerEvents: 'none',
+  position: 'absolute',
+  imageRendering: 'pixelated',
+  top: '0px',
+  left: '0px',
+  width: '2000px',
+  height: '1500px',
+  zIndex: '100',
+};
 
 const SWITCHER_BUTTON_WRAPPER_STYLE = {
   position: 'absolute',
@@ -28,9 +39,7 @@ const SWITCHER_BUTTON_STYLE = {
   border: 'var(--pixel-border)',
   boxShadow: 'var(--pixel-box-shadow)',
   fontFamily: 'var(--garlic-bread-font-pixel)',
-  // Deutschlandfahne
-  backgroundImage:
-    'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)',
+  backgroundImage: 'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)', // Deutschlandfahne
 };
 
 const OPACITY_WRAPPER_STYLE = {
@@ -58,16 +67,12 @@ const OPACITY_SLIDER_STYLE = {
 
 if (window.top !== window.self) {
   addEventListener('load', () => {
-    // ==============================================
     const STORAGE_KEY = 'place-germany-2023-ostate';
     const OVERLAYS = [
       ['https://place.army/overlay_target.png', 'KLEINE PIXEL'],
       ['https://place.army/default_target.png', 'GROßE PIXEL'],
       [null, 'OVERLAY AUS'],
     ];
-    const getConfig = (text) => {
-      return text + '?' + Date.now();
-    };
 
     const setStyle = (element, style) => {
       Object.entries(style).forEach(([key, value]) => {
@@ -87,63 +92,16 @@ if (window.top !== window.self) {
       } catch (e) {}
     }
 
-    const img = document.createElement('img');
-    img.style.pointerEvents = 'none';
-    img.style.position = 'absolute';
-    img.style.imageRendering = 'pixelated';
-    img.src = OVERLAYS[oState.overlayIdx][0];
-    img.style.opacity = oState.opacity;
-    img.style.top = '0px';
-    img.style.left = '0px';
-    img.style.width = CANVAS_WIDTH;
-    img.style.height = CANVAS_HEIGHT;
-    img.style.zIndex = '100';
-    img.onload = () => {
-      img.style.opacity = oState.opacity / 100;
-    };
-
-    const mainContainer = document
-      .querySelector('garlic-bread-embed')
-      .shadowRoot.querySelector('.layout');
-    const positionContainer = mainContainer
-      .querySelector('garlic-bread-canvas')
-      .shadowRoot.querySelector('.container');
-    positionContainer.appendChild(img);
-
     const saveState = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(oState));
     };
 
-    const changeOpacity = (e) => {
-      oState.opacity = e.target.value;
-      img.style.opacity = oState.opacity / 100;
-      saveState();
-    };
-
     const incrementOverlayIndex = () => {
       oState.overlayIdx++;
-      oState.overlayIdx = oState.overlayIdx % OVERLAYS.length;
+      oState.overlayIdx %= OVERLAYS.length;
     };
-
-    const renderCurrentOverlay = () => {
-      const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
-      if (
-        overlayURL === null ||
-        overlayURL === undefined ||
-        overlayURL === ''
-      ) {
-        img.style.opacity = 0;
-        saveState();
-        return;
-      }
-      img.style.opacity = oState.opacity / 100;
-      img.src = getConfig(overlayURL);
-      saveState();
-    };
-
     
-
-    const initializeSwitchOverlayButton = () => {
+    const initializeSwitchOverlayButton = (switchOverlay) => {
       const button = document.createElement('button');
       const setTextToOverlayTitle = () => {
         const [_, overlayTitle] = OVERLAYS[oState.overlayIdx];
@@ -151,39 +109,78 @@ if (window.top !== window.self) {
       };
       button.onclick = () => {
         incrementOverlayIndex();
-        renderCurrentOverlay();
-        setTextToOverlayTitle(button);
+        switchOverlay();
+        setTextToOverlayTitle();
+        saveState();
       };
-      setTextToOverlayTitle(button);
+      setTextToOverlayTitle();
       
       return button;
     };
     
-    const initializeOpacitySlider = () => {
+    const initializeOpacitySlider = (changeOpacity) => {
       const opacitySlider = document.createElement('input');
       opacitySlider.type = 'range';
       opacitySlider.min = 0;
       opacitySlider.max = 100;
       opacitySlider.value = oState.opacity;
-      opacitySlider.oninput = changeOpacity;
+      opacitySlider.oninput = (e) => {
+        oState.opacity = e.target.value;
+        changeOpacity();
+        saveState();
+      };
       
       return opacitySlider;
     };
     
     const run = () => {
+      const canvasCoverImage = document.createElement('img');
+      const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
+      canvasCoverImage.src = overlayURL + '?' + Date.now();
+      setStyle(canvasCoverImage, CANVAS_STYLE);
+      canvasCoverImage.onload = () => {
+        canvasCoverImage.style.opacity = oState.opacity / 100;
+      };
+
+      const mainContainer = document
+        .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+        .shadowRoot.querySelector('.layout');
+      const positionContainer = mainContainer
+        .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
+        .shadowRoot.querySelector('.container');
+
       const buttonContainer = document.createElement('div');
       setStyle(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
       
-      const button = initializeSwitchOverlayButton();
+      const switchOverlay = () => {
+        const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
+        if (
+          overlayURL === null ||
+          overlayURL === undefined ||
+          overlayURL === ''
+        ) {
+          canvasCoverImage.style.opacity = 0;
+        } else {
+          canvasCoverImage.style.opacity = oState.opacity / 100;
+          canvasCoverImage.src = overlayURL + '?' + Date.now();
+        }
+      };
+
+      const updateOverlayOpacity = () => {
+        canvasCoverImage.style.opacity = oState.opacity / 100;
+      };
+      
+      const button = initializeSwitchOverlayButton(switchOverlay);
       setStyle(button, SWITCHER_BUTTON_STYLE);
 
       const sliderContainer = document.createElement('div');
       sliderContainer.innerText = 'Transparenz';
       setStyle(sliderContainer, OPACITY_WRAPPER_STYLE);
 
-      const slider = initializeOpacitySlider();
+      const slider = initializeOpacitySlider(updateOverlayOpacity);
       setStyle(slider, OPACITY_SLIDER_STYLE);
       
+      positionContainer.appendChild(canvasCoverImage);
       buttonContainer.appendChild(button);
       sliderContainer.appendChild(slider);
       buttonContainer.appendChild(sliderContainer);
