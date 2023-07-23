@@ -171,23 +171,23 @@ if (window.top !== window.self) {
     };
     
     const run = () => {
-      const buttonsWrapper = document.createElement('div');
-      setStyle(buttonsWrapper, SWITCHER_BUTTON_WRAPPER_STYLE);
+      const buttonContainer = document.createElement('div');
+      setStyle(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
       
       const button = initializeSwitchOverlayButton();
       setStyle(button, SWITCHER_BUTTON_STYLE);
 
-      const opacityWrapper = document.createElement('div');
-      opacityWrapper.innerText = 'Transparenz';
-      setStyle(opacityWrapper, OPACITY_WRAPPER_STYLE);
+      const sliderContainer = document.createElement('div');
+      sliderContainer.innerText = 'Transparenz';
+      setStyle(sliderContainer, OPACITY_WRAPPER_STYLE);
 
       const slider = initializeOpacitySlider();
       setStyle(slider, OPACITY_SLIDER_STYLE);
       
-      buttonsWrapper.appendChild(button);
-      opacityWrapper.appendChild(slider);
-      buttonsWrapper.appendChild(opacityWrapper);
-      mainContainer.appendChild(buttonsWrapper);
+      buttonContainer.appendChild(button);
+      sliderContainer.appendChild(slider);
+      buttonContainer.appendChild(sliderContainer);
+      mainContainer.appendChild(buttonContainer);
     };
     
     run();
