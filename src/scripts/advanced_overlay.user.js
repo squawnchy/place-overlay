@@ -213,7 +213,6 @@
       .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
       .shadowRoot.querySelector(".container");
     const canvas = canvasContainer.querySelector("canvas");
-    console.log("🚀 ~ file: advanced_overlay.user.js:218 ~ run ~ canvas:", canvas)
     if (!canvas) {
       console.error("Canvas not found");
       return;
