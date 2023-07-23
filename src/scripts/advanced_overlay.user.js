@@ -67,6 +67,12 @@
     }
   }
 
+  /**
+   * Stores the state to localStorage.
+   * 
+   * @param {Object} state The state object
+   * @returns {void}
+   */
   function storeStateToStorage(state) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
