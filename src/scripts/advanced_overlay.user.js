@@ -17,6 +17,8 @@
   const CANVAS_MAIN_CONTAINER_SELECTOR = "garlic-bread-embed";
   const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = "garlic-bread-canvas";
   const STORAGE_KEY = 'place-germany-2023-ostate';
+  const CANVAS_STYLE_DIMENSIONS = {width: "2000px", height: "1500px"};
+  const SWITCHER_BUTTON_POSITION = {bottom: "25px", right: "25px"};
 
   const OVERLAYS = Object.freeze([
     ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
@@ -28,15 +30,33 @@
     Object.assign(element.style, styles);
   }
 
+  function getStateFromStorage() {
+    const storedState = localStorage.getItem(STORAGE_KEY);
+    if (!storedState) return { overlayIdx: 0, opacity: 50 };
+    try {
+      return JSON.parse(storedState);
+    } catch (error) {
+      console.error('Error parsing state from localStorage', error);
+      return { overlayIdx: 0, opacity: 50 };
+    }
+  }
+
+  function storeStateToStorage(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error('Error storing state to localStorage', error);
+    }
+  }
+
   function createCanvasCoverImage(positionContainer, state) {
     const CANVAS_STYLE = {
+      ...CANVAS_STYLE_DIMENSIONS,
       pointerEvents: "none",
       position: "absolute",
       imageRendering: "pixelated",
       top: "0px",
       left: "0px",
-      width: "2000px",
-      height: "1500px",
       zIndex: "100",
     };
 
@@ -51,6 +71,7 @@
 
   function createSwitcherButton(state, changeOverlay) {
     const SWITCHER_BUTTON_STYLE = {
+      ...SWITCHER_BUTTON_POSITION,
       width: "100px",
       height: "65px",
       backgroundColor: "#555",
@@ -99,18 +120,25 @@
   }
 
   function run() {
-    const state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-      overlayIdx: 0,
-      opacity: 50,
-    };
+    const state = getStateFromStorage();
 
-    const mainContainer = document
-      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
-      .shadowRoot.querySelector(".layout");
+    const mainContainer = document.querySelector(CANVAS_MAIN_CONTAINER_SELECTOR);
+    if (!mainContainer) {
+      console.error('Main container not found');
+      return;
+    }
 
-    const positionContainer = mainContainer
-      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
-      .shadowRoot.querySelector(".container");
+    const shadowMainContainer = mainContainer.shadowRoot.querySelector(".layout");
+    if (!shadowMainContainer) {
+      console.error('Shadow main container not found');
+      return;
+    }
+
+    const positionContainer = shadowMainContainer.querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR).shadowRoot.querySelector(".container");
+    if (!positionContainer) {
+      console.error('Position container not found');
+      return;
+    }
 
     const canvasCoverImage = createCanvasCoverImage(positionContainer, state);
 
@@ -124,20 +152,29 @@
       canvasCoverImage.src = overlayURL;
     };
 
-    const button = createSwitcherButton(state, changeOverlay);
-    const SWITCHER_BUTTON_WRAPPER_STYLE = {
+    // Create DocumentFragment for efficiency
+    const fragment = document.createDocumentFragment();
+
+    const SWITCHER_BUTTON_CONTAINER_STYLE = {
       position: "absolute",
       bottom: "25px",
       right: "25px",
     };
     const buttonContainer = document.createElement("div");
-    applyStyles(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
+    applyStyles(buttonContainer, SWITCHER_BUTTON_CONTAINER_STYLE);
+    const button = createSwitcherButton(state, changeOverlay);
+    button.onclick = () => {
+      state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
+      changeOverlay();
+      storeStateToStorage(state);
+      button.textContent = OVERLAYS[state.overlayIdx][1];
+    };
     buttonContainer.appendChild(button);
-    mainContainer.appendChild(buttonContainer);
+    fragment.appendChild(buttonContainer);
 
     const sliderContainer = document.createElement("div");
     sliderContainer.textContent = "Transparenz";
-    const OPACITY_WRAPPER_STYLE = {
+    const OPACITY_CONTAINER_STYLE = {
       width: "100px",
       height: "45px",
       backgroundColor: "#555",
@@ -148,11 +185,17 @@
       marginTop: "15px",
       textAlign: "center",
     };
-    applyStyles(sliderContainer, OPACITY_WRAPPER_STYLE);
-
+    applyStyles(sliderContainer, OPACITY_CONTAINER_STYLE);
     const opacitySlider = createOpacitySlider(state, changeOverlay);
+    opacitySlider.oninput = () => {
+      state.opacity = opacitySlider.value;
+      changeOverlay();
+      storeStateToStorage(state);
+    };
     sliderContainer.appendChild(opacitySlider);
     buttonContainer.appendChild(sliderContainer);
+
+    shadowMainContainer.appendChild(fragment);
 
     changeOverlay();
   }
