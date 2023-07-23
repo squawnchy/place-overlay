@@ -166,7 +166,6 @@
     changeOverlay();
   }
   
-
   if (window.top !== window.self) {
     window.addEventListener('load', run);
   }
