@@ -221,8 +221,10 @@
       bottom: "25px",
       right: "25px",
     };
-    const buttonContainer = document.createElement("div");
-    applyStyles(buttonContainer, SWITCHER_BUTTON_CONTAINER_STYLE);
+    const buttonContainer = applyStyles(
+      document.createElement("div"),
+      SWITCHER_BUTTON_CONTAINER_STYLE
+    );
     const button = createSwitcherButton(state, changeOverlay);
     button.onclick = () => {
       state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
