@@ -11,8 +11,8 @@
 // @grant        none
 // ==/UserScript==
 
-let CANVAS_WIDTH = '2000px';
-let CANVAS_HEIGHT = '1500px';
+const CANVAS_WIDTH = '2000px';
+const CANVAS_HEIGHT = '1500px';
 
 if (window.top !== window.self) {
   addEventListener('load', () => {
