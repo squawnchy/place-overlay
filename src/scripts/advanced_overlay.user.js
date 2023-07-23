@@ -235,8 +235,6 @@
     buttonContainer.appendChild(button);
     fragment.appendChild(buttonContainer);
 
-    const sliderContainer = document.createElement("div");
-    sliderContainer.textContent = "Transparenz";
     const OPACITY_CONTAINER_STYLE = {
       width: "100px",
       height: "45px",
@@ -248,7 +246,11 @@
       marginTop: "15px",
       textAlign: "center",
     };
-    applyStyles(sliderContainer, OPACITY_CONTAINER_STYLE);
+    const sliderContainer = applyStyles(
+      document.createElement("div"),
+      OPACITY_CONTAINER_STYLE
+    );
+    sliderContainer.textContent = "Transparenz";
     const opacitySlider = createOpacitySlider(state, changeOverlay);
     opacitySlider.oninput = () => {
       state.opacity = opacitySlider.value;
