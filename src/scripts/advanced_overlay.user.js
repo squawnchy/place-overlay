@@ -164,8 +164,8 @@
       webkitAppearance: "none",
       appearance: "none",
       height: "15px",
-      width: "95px",
-      borderRadius: "5px",
+      width: "90px",
+      borderRadius: "15px",
       background: "#d3d3d3",
       outline: "none",
       opacity: "0.7",
@@ -278,7 +278,7 @@
     // Setup opacity slider
     //---------------------------------------------------------------------------------------------
     const OPACITY_CONTAINER_STYLE = {
-      width: "100px",
+      width: "95px",
       height: "45px",
       backgroundColor: "#555",
       color: "white",
