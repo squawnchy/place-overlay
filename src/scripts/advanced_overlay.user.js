@@ -169,7 +169,8 @@
       height: "15px",
       width: "90px",
       borderRadius: "15px",
-      background: "#d3d3d3",
+      backgroundImage:
+        "linear-gradient(to bottom, red, red 14%, orange 14%, orange 28%, yellow 28%, yellow 42%, green 42%, green 57%, blue 57%, blue 71%, indigo 71%, indigo 85%, violet 85%)",
       outline: "none",
       opacity: "0.7",
       transition: "opacity .2s",
