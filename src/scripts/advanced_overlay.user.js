@@ -28,7 +28,9 @@
   ]);
 
   function applyStyles(element, styles) {
-    Object.assign(element.style, styles);
+    // Object.assign() kopiert die Werte aller aufzählbaren, eigenen Eigenschaften von 
+    // einem oder mehreren Quellobjekten in ein Zielobjekt. Es gibt das Zielobjekt zurück.
+    return Object.assign(element.style, styles);
   }
 
   function getStateFromStorage() {
