@@ -11,7 +11,14 @@
 // @grant        none
 // ==/UserScript==
 
-
+/**
+ * This code is wrapped in an anonymous function (also known as a "self-invoking" or "immediately-invoked function expression").
+ * This structure isolates the code from the global context, preventing variables and functions from leaking into the global namespace,
+ * which could potentially conflict with other scripts on the page.
+ * 
+ * "use strict"; enables strict mode in JavaScript, which makes the code parsing more rigorous. 
+ * This helps avoid some common errors, like preventing variables from being declared without 'var', 'let', or 'const'.
+ */
 (function () {
   "use strict";
 
