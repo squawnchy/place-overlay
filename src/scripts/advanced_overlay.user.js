@@ -89,6 +89,13 @@
     return canvasCoverImage;
   }
 
+  /**
+   * Erstellt den Switcher Button, der zwischen den Overlays wechselt.
+   * 
+   * @param {Object} state The state object
+   * @param {Function} changeOverlay The function to change the overlay
+   * @returns {HTMLButtonElement} The switcher button
+   */
   function createSwitcherButton(state, changeOverlay) {
     const SWITCHER_BUTTON_STYLE = {
       ...SWITCHER_BUTTON_POSITION,
