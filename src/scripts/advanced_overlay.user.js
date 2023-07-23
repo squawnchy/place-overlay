@@ -50,6 +50,12 @@
     return element;
   }
 
+  /**
+   * Gets the state from localStorage.
+   * 
+   * @returns {Object} The state object
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+   */
   function getStateFromStorage() {
     const storedState = localStorage.getItem(STORAGE_KEY);
     if (!storedState) return { overlayIdx: 0, opacity: 50 };
