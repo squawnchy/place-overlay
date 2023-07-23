@@ -27,10 +27,28 @@
     [null, "OVERLAY AUS"],
   ]);
 
+  /**
+   * Applies the given styles to the given element.
+   * 
+   * @param {HTMLElement} element The element to apply the styles to
+   * @param {Object} styles The styles to apply
+   * @returns {HTMLElement} The element with the applied styles
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style
+   * @example
+   * const element = document.createElement("div");
+   * applyStyles(element, { width: "100px", height: "100px" });
+   * 
+   * const element2 = applyStyles(document.createElement("div"), { width: "100px", height: "100px" });
+   */
   function applyStyles(element, styles) {
-    // Object.assign() kopiert die Werte aller aufzählbaren, eigenen Eigenschaften von 
-    // einem oder mehreren Quellobjekten in ein Zielobjekt. Es gibt das Zielobjekt zurück.
-    return Object.assign(element.style, styles);
+    /**
+     * Object.assign() kopiert die Werte aller aufzählbaren eigenen Eigenschaften von einem oder
+     * mehreren Quellobjekten in ein Zielobjekt.
+     * 
+     * @see https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+     */
+    Object.assign(element.style, styles);
+    return element;
   }
 
   function getStateFromStorage() {
@@ -63,8 +81,7 @@
       zIndex: "100",
     };
 
-    const canvasCoverImage = document.createElement("img");
-    applyStyles(canvasCoverImage, CANVAS_STYLE);
+    const canvasCoverImage = applyStyles(document.createElement("img"), CANVAS_STYLE);
     canvasCoverImage.onload = () => {
       canvasCoverImage.style.opacity = state.opacity / 100;
     };
