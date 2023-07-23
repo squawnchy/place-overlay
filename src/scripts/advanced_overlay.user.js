@@ -14,6 +14,40 @@
 const CANVAS_WIDTH = '2000px';
 const CANVAS_HEIGHT = '1500px';
 
+const SWITCHER_BUTTON_STYLE = {
+  width: '100px',
+  height: '65px',
+  backgroundColor: '#555',
+  color: 'white',
+  border: 'var(--pixel-border)',
+  boxShadow: 'var(--pixel-box-shadow)',
+  fontFamily: 'var(--garlic-bread-font-pixel)',
+  backgroundImage:
+    'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)',
+};
+
+const OPACITY_WRAPPER_STYLE = {
+  height: '45px',
+  backgroundColor: '#555',
+  color: 'white',
+  border: 'var(--pixel-border)',
+  boxShadow: 'var(--pixel-box-shadow)',
+  fontFamily: 'var(--garlic-bread-font-pixel)',
+  marginTop: '15px',
+  textAlign: 'center',
+};
+
+const OPACITY_SLIDER_STYLE = {
+  webkitAppearance: 'none',
+  appearance: 'none',
+  height: '15px',
+  width: '95px',
+  borderRadius: '5px',
+  background: '#d3d3d3',
+  outline: 'none',
+};
+
+
 if (window.top !== window.self) {
   addEventListener('load', () => {
     // ==============================================
@@ -106,16 +140,7 @@ if (window.top !== window.self) {
     const initializeButton = (onClick) => {
       const button = document.createElement('button');
       button.onclick = onClick;
-      button.style.width = '100px';
-      button.style.height = '65px';
-      button.style.backgroundColor = '#555';
-      button.style.color = 'white';
-      button.style.border = 'var(--pixel-border)';
-      button.style.boxShadow = 'var(--pixel-box-shadow)';
-      button.style.fontFamily = 'var(--garlic-bread-font-pixel)';
-      // Deutschlandflagge als Hintergrund
-      button.style.backgroundImage =
-        'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)';
+      button.style = Object.entries(SWITCHER_BUTTON_STYLE)
       return button;
     };
 
@@ -138,15 +163,7 @@ if (window.top !== window.self) {
 
     const renderOpacitySlider = (val, onChange) => {
       const opacityWrapper = document.createElement('div');
-      opacityWrapper.style.width = '100px';
-      opacityWrapper.style.height = '45px';
-      opacityWrapper.style.backgroundColor = '#555';
-      opacityWrapper.style.color = 'white';
-      opacityWrapper.style.border = 'var(--pixel-border)';
-      opacityWrapper.style.boxShadow = 'var(--pixel-box-shadow)';
-      opacityWrapper.style.fontFamily = 'var(--garlic-bread-font-pixel)';
-      opacityWrapper.style.marginTop = '15px';
-      opacityWrapper.style.textAlign = 'center';
+      opacityWrapper.style = Object.entries(OPACITY_WRAPPER_STYLE);
       opacityWrapper.innerText = 'Transparenz';
 
       const opacitySlider = document.createElement('input');
@@ -154,13 +171,7 @@ if (window.top !== window.self) {
       opacitySlider.min = 0;
       opacitySlider.max = 100;
       opacitySlider.value = val;
-      opacitySlider.style.webkitAppearance = 'none';
-      opacitySlider.style.appearance = 'none';
-      opacitySlider.style.height = '15px';
-      opacitySlider.style.width = '95px';
-      opacitySlider.style.borderRadius = '5px';
-      opacitySlider.style.background = '#d3d3d3';
-      opacitySlider.style.outline = 'none';
+      opacitySlider.style = Object.entries(OPACITY_SLIDER_STYLE);
       opacitySlider.oninput = onChange;
 
       opacityWrapper.appendChild(opacitySlider);
