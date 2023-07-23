@@ -210,6 +210,11 @@
 
     const canvasCoverImage = createCanvasCoverImage(positionContainer, state);
 
+    /**
+     * Renders the overlay.
+     * If the overlay is disabled, the opacity is set to 0.
+     * @returns {void}
+     */
     const renderOverlay = () => {
       const [overlayURL] = OVERLAYS[state.overlayIdx];
       if (!overlayURL) {
