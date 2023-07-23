@@ -125,11 +125,13 @@ if (window.top !== window.self) {
     };
 
     const renderSwitchOverlayButton = () => {
-      const button = initializeButton(() => {
+      let button;
+      const onClick = () => {
         incrementOverlayIndex();
         renderCurrentOverlay();
         setTextToOverlayTitle(button);
-      });
+      }
+      button = initializeButton(onClick);
       buttonsWrapper.appendChild(button);
       setTextToOverlayTitle(button);
     };
