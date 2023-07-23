@@ -113,7 +113,7 @@ if (window.top !== window.self) {
       button.style.border = 'var(--pixel-border)';
       button.style.boxShadow = 'var(--pixel-box-shadow)';
       button.style.fontFamily = 'var(--garlic-bread-font-pixel)';
-      // Deutschlandflagge als Hintergrundbild und Farben festlegen
+      // Deutschlandflagge als Hintergrund
       button.style.backgroundImage =
         'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)';
       return button;
