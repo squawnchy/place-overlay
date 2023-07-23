@@ -135,6 +135,10 @@
       fontFamily: "var(--garlic-bread-font-pixel)",
       backgroundImage:
         "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
+      backgroundPosition: "0 0",
+      backgroundRepeat: "no-repeat",
+      cursor: "pointer",
+      outline: "none",
     };
 
     const button = applyStyles(document.createElement("button"), SWITCHER_BUTTON_STYLE);
