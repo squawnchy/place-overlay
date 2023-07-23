@@ -117,8 +117,7 @@
         "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
     };
 
-    const button = document.createElement("button");
-    applyStyles(button, SWITCHER_BUTTON_STYLE);
+    const button = applyStyles(document.createElement("button"), SWITCHER_BUTTON_STYLE);
     button.onclick = () => {
       state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
       changeOverlay();
