@@ -16,57 +16,7 @@
 
   const CANVAS_MAIN_CONTAINER_SELECTOR = "garlic-bread-embed";
   const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = "garlic-bread-canvas";
-
-  const CANVAS_STYLE = Object.freeze({
-    pointerEvents: "none",
-    position: "absolute",
-    imageRendering: "pixelated",
-    top: "0px",
-    left: "0px",
-    width: "2000px",
-    height: "1500px",
-    zIndex: "100",
-  });
-
-  const SWITCHER_BUTTON_WRAPPER_STYLE = Object.freeze({
-    position: "absolute",
-    bottom: "25px",
-    right: "25px",
-  });
-
-  const SWITCHER_BUTTON_STYLE = Object.freeze({
-    width: "100px",
-    height: "65px",
-    backgroundColor: "#555",
-    color: "white",
-    border: "var(--pixel-border)",
-    boxShadow: "var(--pixel-box-shadow)",
-    fontFamily: "var(--garlic-bread-font-pixel)",
-    backgroundImage:
-      "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)", // Deutschlandfahne
-  });
-
-  const OPACITY_WRAPPER_STYLE = Object.freeze({
-    width: "100px",
-    height: "45px",
-    backgroundColor: "#555",
-    color: "white",
-    border: "var(--pixel-border)",
-    boxShadow: "var(--pixel-box-shadow)",
-    fontFamily: "var(--garlic-bread-font-pixel)",
-    marginTop: "15px",
-    textAlign: "center",
-  });
-
-  const OPACITY_SLIDER_STYLE = Object.freeze({
-    webkitAppearance: "none",
-    appearance: "none",
-    height: "15px",
-    width: "95px",
-    borderRadius: "5px",
-    background: "#d3d3d3",
-    outline: "none",
-  });
+  const STORAGE_KEY = 'place-germany-2023-ostate';
 
   const OVERLAYS = Object.freeze([
     ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
@@ -74,9 +24,24 @@
     [null, "OVERLAY AUS"],
   ]);
 
+  function applyStyles(element, styles) {
+    Object.assign(element.style, styles);
+  }
+
   function createCanvasCoverImage(positionContainer, state) {
+    const CANVAS_STYLE = {
+      pointerEvents: "none",
+      position: "absolute",
+      imageRendering: "pixelated",
+      top: "0px",
+      left: "0px",
+      width: "2000px",
+      height: "1500px",
+      zIndex: "100",
+    };
+
     const canvasCoverImage = document.createElement("img");
-    Object.assign(canvasCoverImage.style, CANVAS_STYLE);
+    applyStyles(canvasCoverImage, CANVAS_STYLE);
     canvasCoverImage.onload = () => {
       canvasCoverImage.style.opacity = state.opacity / 100;
     };
@@ -84,9 +49,20 @@
     return canvasCoverImage;
   }
 
-  function createSwitcherButton(STORAGE_KEY, state, changeOverlay) {
+  function createSwitcherButton(state, changeOverlay) {
+    const SWITCHER_BUTTON_STYLE = {
+      width: "100px",
+      height: "65px",
+      backgroundColor: "#555",
+      color: "white",
+      border: "var(--pixel-border)",
+      boxShadow: "var(--pixel-box-shadow)",
+      fontFamily: "var(--garlic-bread-font-pixel)",
+      backgroundImage: "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
+    };
+
     const button = document.createElement("button");
-    Object.assign(button.style, SWITCHER_BUTTON_STYLE);
+    applyStyles(button, SWITCHER_BUTTON_STYLE);
     button.onclick = () => {
       state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
       changeOverlay();
@@ -97,7 +73,17 @@
     return button;
   }
 
-  function createOpacitySlider(STORAGE_KEY, state, changeOverlay) {
+  function createOpacitySlider(state, changeOverlay) {
+    const OPACITY_SLIDER_STYLE = {
+      webkitAppearance: "none",
+      appearance: "none",
+      height: "15px",
+      width: "95px",
+      borderRadius: "5px",
+      background: "#d3d3d3",
+      outline: "none",
+    };
+
     const opacitySlider = document.createElement("input");
     opacitySlider.type = "range";
     opacitySlider.min = 0;
@@ -108,12 +94,11 @@
       changeOverlay();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     };
-    Object.assign(opacitySlider.style, OPACITY_SLIDER_STYLE);
+    applyStyles(opacitySlider, OPACITY_SLIDER_STYLE);
     return opacitySlider;
   }
 
   function run() {
-    const STORAGE_KEY = 'place-germany-2023-ostate';
     const state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
       overlayIdx: 0,
       opacity: 50,
@@ -139,21 +124,33 @@
       canvasCoverImage.src = overlayURL;
     };
 
-    const button = createSwitcherButton(STORAGE_KEY, state, changeOverlay);
+    const button = createSwitcherButton(state, changeOverlay);
+    const SWITCHER_BUTTON_WRAPPER_STYLE = {
+      position: "absolute",
+      bottom: "25px",
+      right: "25px",
+    };
     const buttonContainer = document.createElement("div");
-    Object.assign(buttonContainer.style, SWITCHER_BUTTON_WRAPPER_STYLE);
+    applyStyles(buttonContainer, SWITCHER_BUTTON_WRAPPER_STYLE);
     buttonContainer.appendChild(button);
     mainContainer.appendChild(buttonContainer);
 
     const sliderContainer = document.createElement("div");
     sliderContainer.textContent = "Transparenz";
-    Object.assign(sliderContainer.style, OPACITY_WRAPPER_STYLE);
+    const OPACITY_WRAPPER_STYLE = {
+      width: "100px",
+      height: "45px",
+      backgroundColor: "#555",
+      color: "white",
+      border: "var(--pixel-border)",
+      boxShadow: "var(--pixel-box-shadow)",
+      fontFamily: "var(--garlic-bread-font-pixel)",
+      marginTop: "15px",
+      textAlign: "center",
+    };
+    applyStyles(sliderContainer, OPACITY_WRAPPER_STYLE);
 
-    const opacitySlider = createOpacitySlider(
-      STORAGE_KEY,
-      state,
-      changeOverlay
-    );
+    const opacitySlider = createOpacitySlider(state, changeOverlay);
     sliderContainer.appendChild(opacitySlider);
     buttonContainer.appendChild(sliderContainer);
 
