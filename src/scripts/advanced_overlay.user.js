@@ -152,7 +152,17 @@
       canvasCoverImage.src = overlayURL;
     };
 
-    // Create DocumentFragment for efficiency
+    /**
+     * Erstellt ein DocumentFragment. DocumentFragments sind leichtgewichtige und effiziente
+     * Container für temporäre Gruppen von Knoten. Alle Änderungen an einem DocumentFragment
+     * werden nicht live gerendert, wodurch die Geschwindigkeit verbessert und die Anzahl der
+     * Reflow-Operationen (Neuberechnungen des Layouts) reduziert wird. Darüber hinaus ermöglicht
+     * es das saubere Verschieben und Manipulieren von Knoten ohne Bezug zu ihrem aktuellen
+     * Zustand oder Position im DOM. Es wird weniger Speicher verbraucht, da keine zusätzlichen
+     * Informationen wie parentNode für seine Kinderknoten gespeichert werden.
+     * 
+     * @see https://developer.mozilla.org/de/docs/Web/API/Document/createDocumentFragment
+     */
     const fragment = document.createDocumentFragment();
 
     const SWITCHER_BUTTON_CONTAINER_STYLE = {
