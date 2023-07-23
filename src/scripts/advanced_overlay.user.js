@@ -16,57 +16,58 @@ let height = "1500px";
 var button = null;
 
 if (window.top !== window.self) {
-  addEventListener('load', () => {
+  addEventListener("load", () => {
     // ==============================================
-    const STORAGE_KEY = 'place-germany-2023-ostate';
+    const STORAGE_KEY = "place-germany-2023-ostate";
     const OVERLAYS = [
-      ["https://place.army/overlay_target.png", "kleine Pixel"],
-      ["https://place.army/default_target.png", "große Pixel"]
+      ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
+      ["https://place.army/default_target.png", "GROßE PIXEL"],
+      [null, "OVERLAY AUS"],
     ];
     const getConfig = (text) => {
-        return text + "?" + Date.now()
-    }
+      return text + "?" + Date.now();
+    };
 
     let oState = {
       opacity: 100,
-      overlayIdx: 0
+      overlayIdx: 0,
     };
 
     const oStateStorage = localStorage.getItem(STORAGE_KEY);
-    if(oStateStorage !== null) {
+    if (oStateStorage !== null) {
       try {
         oState = Object.assign({}, oState, JSON.parse(oStateStorage));
-      } catch(e){}
+      } catch (e) {}
     }
 
-    const img = document.createElement('img');
-    img.style.pointerEvents = 'none';
-    img.style.position = 'absolute';
-    img.style.imageRendering = 'pixelated';
+    const img = document.createElement("img");
+    img.style.pointerEvents = "none";
+    img.style.position = "absolute";
+    img.style.imageRendering = "pixelated";
     img.src = OVERLAYS[oState.overlayIdx][0];
     img.style.opacity = oState.opacity;
-    img.style.top = '0px';
-    img.style.left = '0px';
+    img.style.top = "0px";
+    img.style.left = "0px";
     img.style.width = width;
     img.style.height = height;
-    img.style.zIndex = '100';
+    img.style.zIndex = "100";
     img.onload = () => {
-      console.log('loaded');
+      console.log("loaded");
       img.style.opacity = oState.opacity / 100;
     };
 
     const mainContainer = document
-      .querySelector('garlic-bread-embed')
-      .shadowRoot.querySelector('.layout');
+      .querySelector("garlic-bread-embed")
+      .shadowRoot.querySelector(".layout");
     const positionContainer = mainContainer
-      .querySelector('garlic-bread-canvas')
-      .shadowRoot.querySelector('.container');
+      .querySelector("garlic-bread-canvas")
+      .shadowRoot.querySelector(".container");
     positionContainer.appendChild(img);
 
     // ==============================================
     // Add buttons to toggle overlay
 
-    const buttonsWrapper = document.createElement('div');
+    const buttonsWrapper = document.createElement("div");
     buttonsWrapper.style.position = "absolute";
     buttonsWrapper.style.bottom = "25px";
     buttonsWrapper.style.right = "25px";
@@ -74,27 +75,37 @@ if (window.top !== window.self) {
 
     const saveState = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(oState));
-    }
+    };
 
     const changeOpacity = (e) => {
-      oState.opacity = e.target.value
+      oState.opacity = e.target.value;
       img.style.opacity = oState.opacity / 100;
       saveState();
     };
 
-    const switchOverlay = () => {
+    const incrementOverlayIndex = () => {
       oState.overlayIdx++;
-      if(oState.overlayIdx >= OVERLAYS.length){
-        oState.overlayIdx = 0;
+      oState.overlayIdx = oState.overlayIdx % OVERLAYS.length;
+    };
+
+    const renderCurrentOverlay = () => {
+      const [overlayURL, _] = OVERLAYS[oState.overlayIdx];
+      if (
+        overlayURL === null ||
+        overlayURL === undefined ||
+        overlayURL === ""
+      ) {
+        img.style.opacity = 0;
+        saveState();
+        return;
       }
-      img.src = getConfig(OVERLAYS[oState.overlayIdx][0]);
-      button.innerText = 'Switch Overlay\n(' + OVERLAYS[oState.overlayIdx][1] + ')';
       img.style.opacity = oState.opacity / 100;
+      img.src = getConfig(overlayURL);
       saveState();
     };
 
-    const addButton = (text, onClick) => {
-      button = document.createElement('button');
+    const initializeButton = (onClick) => {
+      const button = document.createElement("button");
       button.onclick = onClick;
       button.style.width = "100px";
       button.style.height = "65px";
@@ -103,14 +114,29 @@ if (window.top !== window.self) {
       button.style.border = "var(--pixel-border)";
       button.style.boxShadow = "var(--pixel-box-shadow)";
       button.style.fontFamily = "var(--garlic-bread-font-pixel)";
-
-      button.innerText = text;
-
-      buttonsWrapper.appendChild(button);
+      // Deutschlandflagge als Hintergrundbild und Farben festlegen
+      button.style.backgroundImage =
+        "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)";
+      return button;
     };
 
-    const addSlider = (text, min, max, val, onChange) => {
-      const opacityWrapper = document.createElement('div');
+    const setTextToOverlayTitle = (button) => {
+      const [_, overlayTitle] = OVERLAYS[oState.overlayIdx];
+      button.innerText = overlayTitle;
+    };
+
+    const renderSwitchOverlayButton = () => {
+      const button = initializeButton(() => {
+        incrementOverlayIndex();
+        renderCurrentOverlay();
+        setTextToOverlayTitle(button);
+      });
+      buttonsWrapper.appendChild(button);
+      setTextToOverlayTitle(button);
+    };
+
+    const renderOpacitySlider = (val, onChange) => {
+      const opacityWrapper = document.createElement("div");
       opacityWrapper.style.width = "100px";
       opacityWrapper.style.height = "45px";
       opacityWrapper.style.backgroundColor = "#555";
@@ -120,12 +146,12 @@ if (window.top !== window.self) {
       opacityWrapper.style.fontFamily = "var(--garlic-bread-font-pixel)";
       opacityWrapper.style.marginTop = "15px";
       opacityWrapper.style.textAlign = "center";
-      opacityWrapper.innerText = text;
+      opacityWrapper.innerText = "Transparenz";
 
-      const opacitySlider = document.createElement('input');
+      const opacitySlider = document.createElement("input");
       opacitySlider.type = "range";
-      opacitySlider.min = min;
-      opacitySlider.max = max;
+      opacitySlider.min = 0;
+      opacitySlider.max = 100;
       opacitySlider.value = val;
       opacitySlider.style.webkitAppearance = "none";
       opacitySlider.style.appearance = "none";
@@ -140,14 +166,7 @@ if (window.top !== window.self) {
       buttonsWrapper.appendChild(opacityWrapper);
     };
 
-    addButton(
-      'Switch Overlay\n(kleine Pixel)',
-      switchOverlay
-    );
-    addSlider(
-      'Opacity',
-      0, 100, oState.opacity,
-      changeOpacity
-    );
+    renderSwitchOverlayButton();
+    renderOpacitySlider(oState.opacity, changeOpacity);
   });
 }
