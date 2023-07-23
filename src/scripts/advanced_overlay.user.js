@@ -147,7 +147,7 @@
       outline: "none",
     };
 
-    const opacitySlider = document.createElement("input");
+    const opacitySlider = applyStyles(document.createElement("input"), OPACITY_SLIDER_STYLE);
     opacitySlider.type = "range";
     opacitySlider.min = 0;
     opacitySlider.max = 100;
@@ -157,7 +157,7 @@
       changeOverlay();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     };
-    applyStyles(opacitySlider, OPACITY_SLIDER_STYLE);
+
     return opacitySlider;
   }
 
