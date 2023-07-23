@@ -207,7 +207,7 @@
 
     const canvasCoverImage = createCanvasCoverImage(positionContainer, state);
 
-    const changeOverlay = () => {
+    const renderOverlay = () => {
       const [overlayURL] = OVERLAYS[state.overlayIdx];
       if (!overlayURL) {
         canvasCoverImage.style.opacity = 0;
@@ -237,10 +237,10 @@
       document.createElement("div"),
       SWITCHER_BUTTON_CONTAINER_STYLE
     );
-    const button = createSwitcherButton(state, changeOverlay);
+    const button = createSwitcherButton(state, renderOverlay);
     button.onclick = () => {
       state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
-      changeOverlay();
+      renderOverlay();
       storeStateToStorage(state);
       button.textContent = OVERLAYS[state.overlayIdx][1];
     };
@@ -263,10 +263,10 @@
       OPACITY_CONTAINER_STYLE
     );
     sliderContainer.textContent = "Transparenz";
-    const opacitySlider = createOpacitySlider(state, changeOverlay);
+    const opacitySlider = createOpacitySlider(state, renderOverlay);
     opacitySlider.oninput = () => {
       state.opacity = opacitySlider.value;
-      changeOverlay();
+      renderOverlay();
       storeStateToStorage(state);
     };
     sliderContainer.appendChild(opacitySlider);
@@ -274,7 +274,7 @@
 
     shadowMainContainer.appendChild(fragment);
 
-    changeOverlay();
+    renderOverlay();
   }
 
   if (window.top !== window.self) {
