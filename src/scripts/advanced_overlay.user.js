@@ -180,6 +180,9 @@
    * @returns {void}
    */
   function run() {
+    //---------------------------------------------------------------------------------------------
+    // Setup canvas cover image
+    //---------------------------------------------------------------------------------------------
     const state = getStateFromStorage();
 
     const mainContainer = document.querySelector(
@@ -216,7 +219,7 @@
       canvasCoverImage.style.opacity = state.opacity / 100;
       canvasCoverImage.src = overlayURL;
     };
-
+    
     /**
      * Creates a new empty DocumentFragment. DocumentFragments are lightweight and efficient
      * containers for temporary groupings of nodes. They improve performance by not forcing
@@ -228,6 +231,9 @@
      */
     const fragment = document.createDocumentFragment();
 
+    //---------------------------------------------------------------------------------------------
+    // Setup switcher button
+    //---------------------------------------------------------------------------------------------
     const SWITCHER_BUTTON_CONTAINER_STYLE = {
       position: "absolute",
       bottom: "25px",
@@ -247,6 +253,9 @@
     buttonContainer.appendChild(button);
     fragment.appendChild(buttonContainer);
 
+    //---------------------------------------------------------------------------------------------
+    // Setup opacity slider
+    //---------------------------------------------------------------------------------------------
     const OPACITY_CONTAINER_STYLE = {
       width: "100px",
       height: "45px",
@@ -274,6 +283,7 @@
 
     shadowMainContainer.appendChild(fragment);
 
+    // Render the overlay once on load
     renderOverlay();
   }
 
