@@ -129,6 +129,13 @@
     return button;
   }
 
+  /**
+   * Creates the opacity slider that changes the opacity of the overlay.
+   * 
+   * @param {Object} state The state object
+   * @param {Function} changeOverlay The function to change the overlay
+   * @returns {HTMLInputElement} The opacity slider
+   */
   function createOpacitySlider(state, changeOverlay) {
     const OPACITY_SLIDER_STYLE = {
       webkitAppearance: "none",
