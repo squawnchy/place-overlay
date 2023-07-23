@@ -168,6 +168,9 @@
       borderRadius: "5px",
       background: "#d3d3d3",
       outline: "none",
+      opacity: "0.7",
+      transition: "opacity .2s",
+      cursor: "pointer",
     };
 
     const opacitySlider = applyStyles(document.createElement("input"), OPACITY_SLIDER_STYLE);
