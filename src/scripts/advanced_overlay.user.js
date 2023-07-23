@@ -14,6 +14,12 @@
 const CANVAS_WIDTH = '2000px';
 const CANVAS_HEIGHT = '1500px';
 
+const SWITCHER_BUTTON_WRAPPER_STYLE = {
+  position: 'absolute',
+  bottom: '25px',
+  right: '25px',
+};
+
 const SWITCHER_BUTTON_STYLE = {
   width: '100px',
   height: '65px',
@@ -22,11 +28,13 @@ const SWITCHER_BUTTON_STYLE = {
   border: 'var(--pixel-border)',
   boxShadow: 'var(--pixel-box-shadow)',
   fontFamily: 'var(--garlic-bread-font-pixel)',
+  // Deutschlandfahne
   backgroundImage:
     'linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)',
 };
 
 const OPACITY_WRAPPER_STYLE = {
+  width: '100px',
   height: '45px',
   backgroundColor: '#555',
   color: 'white',
@@ -61,6 +69,12 @@ if (window.top !== window.self) {
       return text + '?' + Date.now();
     };
 
+    const setStyle = (element, style) => {
+      Object.entries(style).forEach(([key, value]) => {
+        element.style[key] = value;
+      });
+    };
+
     let oState = {
       opacity: 100,
       overlayIdx: 0,
@@ -85,7 +99,6 @@ if (window.top !== window.self) {
     img.style.height = CANVAS_HEIGHT;
     img.style.zIndex = '100';
     img.onload = () => {
-      console.log('loaded');
       img.style.opacity = oState.opacity / 100;
     };
 
@@ -96,15 +109,6 @@ if (window.top !== window.self) {
       .querySelector('garlic-bread-canvas')
       .shadowRoot.querySelector('.container');
     positionContainer.appendChild(img);
-
-    // ==============================================
-    // Add buttons to toggle overlay
-
-    const buttonsWrapper = document.createElement('div');
-    buttonsWrapper.style.position = 'absolute';
-    buttonsWrapper.style.bottom = '25px';
-    buttonsWrapper.style.right = '25px';
-    mainContainer.appendChild(buttonsWrapper);
 
     const saveState = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(oState));
@@ -137,48 +141,55 @@ if (window.top !== window.self) {
       saveState();
     };
 
-    const initializeButton = (onClick) => {
+    
+
+    const initializeSwitchOverlayButton = () => {
       const button = document.createElement('button');
-      button.onclick = onClick;
-      button.style = Object.entries(SWITCHER_BUTTON_STYLE)
-      return button;
-    };
-
-    const setTextToOverlayTitle = (button) => {
-      const [_, overlayTitle] = OVERLAYS[oState.overlayIdx];
-      button.innerText = overlayTitle;
-    };
-
-    const renderSwitchOverlayButton = () => {
-      let button;
-      const onClick = () => {
+      const setTextToOverlayTitle = () => {
+        const [_, overlayTitle] = OVERLAYS[oState.overlayIdx];
+        button.innerText = overlayTitle;
+      };
+      button.onclick = () => {
         incrementOverlayIndex();
         renderCurrentOverlay();
         setTextToOverlayTitle(button);
-      }
-      button = initializeButton(onClick);
-      buttonsWrapper.appendChild(button);
+      };
       setTextToOverlayTitle(button);
+      
+      return button;
     };
-
-    const renderOpacitySlider = (val, onChange) => {
-      const opacityWrapper = document.createElement('div');
-      opacityWrapper.style = Object.entries(OPACITY_WRAPPER_STYLE);
-      opacityWrapper.innerText = 'Transparenz';
-
+    
+    const initializeOpacitySlider = () => {
       const opacitySlider = document.createElement('input');
       opacitySlider.type = 'range';
       opacitySlider.min = 0;
       opacitySlider.max = 100;
-      opacitySlider.value = val;
-      opacitySlider.style = Object.entries(OPACITY_SLIDER_STYLE);
-      opacitySlider.oninput = onChange;
-
-      opacityWrapper.appendChild(opacitySlider);
-      buttonsWrapper.appendChild(opacityWrapper);
+      opacitySlider.value = oState.opacity;
+      opacitySlider.oninput = changeOpacity;
+      
+      return opacitySlider;
     };
+    
+    const run = () => {
+      const buttonsWrapper = document.createElement('div');
+      setStyle(buttonsWrapper, SWITCHER_BUTTON_WRAPPER_STYLE);
+      
+      const button = initializeSwitchOverlayButton();
+      setStyle(button, SWITCHER_BUTTON_STYLE);
 
-    renderSwitchOverlayButton();
-    renderOpacitySlider(oState.opacity, changeOpacity);
+      const opacityWrapper = document.createElement('div');
+      opacityWrapper.innerText = 'Transparenz';
+      setStyle(opacityWrapper, OPACITY_WRAPPER_STYLE);
+
+      const slider = initializeOpacitySlider();
+      setStyle(slider, OPACITY_SLIDER_STYLE);
+      
+      buttonsWrapper.appendChild(button);
+      opacityWrapper.appendChild(slider);
+      buttonsWrapper.appendChild(opacityWrapper);
+      mainContainer.appendChild(buttonsWrapper);
+    };
+    
+    run();
   });
 }
