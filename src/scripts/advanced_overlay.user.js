@@ -134,7 +134,7 @@
       boxShadow: "var(--pixel-box-shadow)",
       fontFamily: "var(--garlic-bread-font-pixel)",
       backgroundImage:
-        "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
+        "linear-gradient(to bottom, red, red 14%, orange 14%, orange 28%, yellow 28%, yellow 42%, green 42%, green 57%, blue 57%, blue 71%, indigo 71%, indigo 85%, violet 85%)",
       backgroundPosition: "0 0",
       backgroundRepeat: "no-repeat",
       cursor: "pointer",
