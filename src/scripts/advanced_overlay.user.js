@@ -16,9 +16,9 @@
 
   const CANVAS_MAIN_CONTAINER_SELECTOR = "garlic-bread-embed";
   const CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR = "garlic-bread-canvas";
-  const STORAGE_KEY = 'place-germany-2023-ostate';
-  const CANVAS_STYLE_DIMENSIONS = {width: "2000px", height: "1500px"};
-  const SWITCHER_BUTTON_POSITION = {bottom: "25px", right: "25px"};
+  const STORAGE_KEY = "place-germany-2023-ostate";
+  const CANVAS_STYLE_DIMENSIONS = { width: "2000px", height: "1500px" };
+  const SWITCHER_BUTTON_POSITION = { bottom: "25px", right: "25px" };
 
   const OVERLAYS = Object.freeze([
     ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
@@ -36,7 +36,7 @@
     try {
       return JSON.parse(storedState);
     } catch (error) {
-      console.error('Error parsing state from localStorage', error);
+      console.error("Error parsing state from localStorage", error);
       return { overlayIdx: 0, opacity: 50 };
     }
   }
@@ -45,7 +45,7 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
-      console.error('Error storing state to localStorage', error);
+      console.error("Error storing state to localStorage", error);
     }
   }
 
@@ -79,7 +79,8 @@
       border: "var(--pixel-border)",
       boxShadow: "var(--pixel-box-shadow)",
       fontFamily: "var(--garlic-bread-font-pixel)",
-      backgroundImage: "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
+      backgroundImage:
+        "linear-gradient(to bottom, black, black 33%, red 33%, red 66%, yellow 66%)",
     };
 
     const button = document.createElement("button");
@@ -122,21 +123,26 @@
   function run() {
     const state = getStateFromStorage();
 
-    const mainContainer = document.querySelector(CANVAS_MAIN_CONTAINER_SELECTOR);
+    const mainContainer = document.querySelector(
+      CANVAS_MAIN_CONTAINER_SELECTOR
+    );
     if (!mainContainer) {
-      console.error('Main container not found');
+      console.error("Main container not found");
       return;
     }
 
-    const shadowMainContainer = mainContainer.shadowRoot.querySelector(".layout");
+    const shadowMainContainer =
+      mainContainer.shadowRoot.querySelector(".layout");
     if (!shadowMainContainer) {
-      console.error('Shadow main container not found');
+      console.error("Shadow main container not found");
       return;
     }
 
-    const positionContainer = shadowMainContainer.querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR).shadowRoot.querySelector(".container");
+    const positionContainer = shadowMainContainer
+      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
+      .shadowRoot.querySelector(".container");
     if (!positionContainer) {
-      console.error('Position container not found');
+      console.error("Position container not found");
       return;
     }
 
@@ -160,7 +166,7 @@
      * es das saubere Verschieben und Manipulieren von Knoten ohne Bezug zu ihrem aktuellen
      * Zustand oder Position im DOM. Es wird weniger Speicher verbraucht, da keine zusätzlichen
      * Informationen wie parentNode für seine Kinderknoten gespeichert werden.
-     * 
+     *
      * @see https://developer.mozilla.org/de/docs/Web/API/Document/createDocumentFragment
      */
     const fragment = document.createDocumentFragment();
