@@ -42,8 +42,7 @@
    */
   function applyStyles(element, styles) {
     /**
-     * Object.assign() kopiert die Werte aller aufzählbaren eigenen Eigenschaften von einem oder
-     * mehreren Quellobjekten in ein Zielobjekt.
+     * Copies all enumerable own properties from one or more source objects to a target object.
      * 
      * @see https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
      */
@@ -90,7 +89,7 @@
   }
 
   /**
-   * Erstellt den Switcher Button, der zwischen den Overlays wechselt.
+   * Creates the switcher button that toggles the overlay.
    * 
    * @param {Object} state The state object
    * @param {Function} changeOverlay The function to change the overlay
@@ -193,13 +192,11 @@
     };
 
     /**
-     * Erstellt ein DocumentFragment. DocumentFragments sind leichtgewichtige und effiziente
-     * Container für temporäre Gruppen von Knoten. Alle Änderungen an einem DocumentFragment
-     * werden nicht live gerendert, wodurch die Geschwindigkeit verbessert und die Anzahl der
-     * Reflow-Operationen (Neuberechnungen des Layouts) reduziert wird. Darüber hinaus ermöglicht
-     * es das saubere Verschieben und Manipulieren von Knoten ohne Bezug zu ihrem aktuellen
-     * Zustand oder Position im DOM. Es wird weniger Speicher verbraucht, da keine zusätzlichen
-     * Informationen wie parentNode für seine Kinderknoten gespeichert werden.
+     * Creates a new empty DocumentFragment. DocumentFragments are lightweight and efficient
+     * containers for temporary groupings of nodes. They improve performance by not forcing
+     * reflow and layout of their containing page when manipulated. They also allow for
+     * efficient movement of nodes between documents, whether within a single window or
+     * between windows.
      *
      * @see https://developer.mozilla.org/de/docs/Web/API/Document/createDocumentFragment
      */
