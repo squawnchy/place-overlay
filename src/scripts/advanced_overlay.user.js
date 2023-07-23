@@ -20,8 +20,9 @@
   const CANVAS_STYLE_DIMENSIONS = { width: "2000px", height: "1500px" };
   const SWITCHER_BUTTON_POSITION = { bottom: "25px", right: "25px" };
 
+  // [overlayURL, overlayName]
   const OVERLAYS = Object.freeze([
-    ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
+    ["https://place.army/overlay_target.png", "KLEINE PIXEL"], 
     ["https://place.army/default_target.png", "GROßE PIXEL"],
     [null, "OVERLAY AUS"],
   ]);
