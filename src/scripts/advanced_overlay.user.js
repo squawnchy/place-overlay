@@ -15,8 +15,8 @@
  * This code is wrapped in an anonymous function (also known as a "self-invoking" or "immediately-invoked function expression").
  * This structure isolates the code from the global context, preventing variables and functions from leaking into the global namespace,
  * which could potentially conflict with other scripts on the page.
- * 
- * "use strict"; enables strict mode in JavaScript, which makes the code parsing more rigorous. 
+ *
+ * "use strict"; enables strict mode in JavaScript, which makes the code parsing more rigorous.
  * This helps avoid some common errors, like preventing variables from being declared without 'var', 'let', or 'const'.
  */
 (function () {
@@ -30,14 +30,14 @@
 
   // [overlayURL, overlayName]
   const OVERLAYS = Object.freeze([
-    ["https://place.army/overlay_target.png", "KLEINE PIXEL"], 
+    ["https://place.army/overlay_target.png", "KLEINE PIXEL"],
     ["https://place.army/default_target.png", "GROßE PIXEL"],
     [null, "OVERLAY AUS"],
   ]);
 
   /**
    * Applies the given styles to the given element.
-   * 
+   *
    * @param {HTMLElement} element The element to apply the styles to
    * @param {Object} styles The styles to apply
    * @returns {HTMLElement} The element with the applied styles
@@ -45,13 +45,13 @@
    * @example
    * const element = document.createElement("div");
    * applyStyles(element, { width: "100px", height: "100px" });
-   * 
+   *
    * const element2 = applyStyles(document.createElement("div"), { width: "100px", height: "100px" });
    */
   function applyStyles(element, styles) {
     /**
      * Copies all enumerable own properties from one or more source objects to a target object.
-     * 
+     *
      * @see https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
      */
     Object.assign(element.style, styles);
@@ -60,7 +60,7 @@
 
   /**
    * Gets the state from localStorage.
-   * 
+   *
    * @returns {Object} The state object
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
    */
@@ -77,7 +77,7 @@
 
   /**
    * Stores the state to localStorage.
-   * 
+   *
    * @param {Object} state The state object
    * @returns {void}
    */
@@ -91,34 +91,36 @@
 
   /**
    * Creates the canvas image that is shown on top of the canvas.
-   * 
-   * @param {HTMLElement} positionContainer The container that holds the canvas
+   *
+   * @param {HTMLElement} container The container that holds the canvas
    * @param {Object} state The state object
    * @returns {HTMLImageElement} The canvas cover image
    * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement
    */
-  function createCanvasCoverImage(positionContainer, state) {
+  function createOverlayImage(state) {
     const CANVAS_STYLE = {
       ...CANVAS_STYLE_DIMENSIONS,
       pointerEvents: "none",
-      position: "absolute",
       imageRendering: "pixelated",
       top: "0px",
       left: "0px",
       zIndex: "100",
+      position: "absolute",
     };
 
-    const canvasCoverImage = applyStyles(document.createElement("img"), CANVAS_STYLE);
+    const canvasCoverImage = applyStyles(
+      document.createElement("img"),
+      CANVAS_STYLE
+    );
     canvasCoverImage.onload = () => {
       canvasCoverImage.style.opacity = state.opacity / 100;
     };
-    positionContainer.appendChild(canvasCoverImage);
     return canvasCoverImage;
   }
 
   /**
    * Creates the switcher button that toggles the overlay.
-   * 
+   *
    * @param {Object} state The state object
    * @param {Function} changeOverlay The function to change the overlay
    * @returns {HTMLButtonElement} The switcher button
@@ -141,7 +143,10 @@
       outline: "none",
     };
 
-    const button = applyStyles(document.createElement("button"), SWITCHER_BUTTON_STYLE);
+    const button = applyStyles(
+      document.createElement("button"),
+      SWITCHER_BUTTON_STYLE
+    );
     button.onclick = () => {
       state.overlayIdx = (state.overlayIdx + 1) % OVERLAYS.length;
       changeOverlay();
@@ -154,7 +159,7 @@
 
   /**
    * Creates the opacity slider that changes the opacity of the overlay.
-   * 
+   *
    * @param {Object} state The state object
    * @param {Function} changeOverlay The function to change the overlay
    * @returns {HTMLInputElement} The opacity slider
@@ -173,7 +178,10 @@
       cursor: "pointer",
     };
 
-    const opacitySlider = applyStyles(document.createElement("input"), OPACITY_SLIDER_STYLE);
+    const opacitySlider = applyStyles(
+      document.createElement("input"),
+      OPACITY_SLIDER_STYLE
+    );
     opacitySlider.type = "range";
     opacitySlider.min = 0;
     opacitySlider.max = 100;
@@ -188,43 +196,46 @@
   }
 
   /**
-   * Main function that runs the script. It is called when the page is loaded. It gets the state 
-   * from localStorage, creates the canvas cover image, the switcher button and the opacity 
+   * Main function that runs the script. It is called when the page is loaded. It gets the state
+   * from localStorage, creates the canvas cover image, the switcher button and the opacity
    * slider and appends them to the page.
-   * 
+   *
    * @returns {void}
    */
   function run() {
     // Get state from localStorage or create a new one
     const state = getStateFromStorage();
-    
+
     //---------------------------------------------------------------------------------------------
     // Setup canvas cover image
     //---------------------------------------------------------------------------------------------
-    const mainContainer = document.querySelector(
-      CANVAS_MAIN_CONTAINER_SELECTOR
-    );
-    if (!mainContainer) {
-      console.error("Main container not found");
-      return;
-    }
-
-    const shadowMainContainer =
-      mainContainer.shadowRoot.querySelector(".layout");
-    if (!shadowMainContainer) {
-      console.error("Shadow main container not found");
-      return;
-    }
-
-    const positionContainer = shadowMainContainer
+    const canvasContainer = document
+      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+      .shadowRoot.querySelector(".layout")
       .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
       .shadowRoot.querySelector(".container");
-    if (!positionContainer) {
-      console.error("Position container not found");
+    const canvas = canvasContainer.querySelector("canvas");
+    console.log("🚀 ~ file: advanced_overlay.user.js:218 ~ run ~ canvas:", canvas)
+    if (!canvas) {
+      console.error("Canvas not found");
       return;
     }
 
-    const canvasCoverImage = createCanvasCoverImage(positionContainer, state);
+    const overlayImage = createOverlayImage(state);
+    // Adjust the overlay image to the canvas size
+    overlayImage.style.width = `${canvas.width}px`;
+    overlayImage.style.height = `${canvas.height}px`;
+
+    // Observer that observes the canvas size and adjusts the overlay image accordingly
+    const canvasObserver = new MutationObserver(() => {
+      overlayImage.style.width = `${canvas.width}px`;
+      overlayImage.style.height = `${canvas.height}px`;
+    });
+    canvasObserver.observe(canvas, {
+      attributes: true,
+      attributeFilter: ["width", "height"],
+    });
+    canvasContainer.appendChild(overlayImage);
 
     /**
      * Renders the overlay.
@@ -234,13 +245,13 @@
     const renderOverlay = () => {
       const [overlayURL] = OVERLAYS[state.overlayIdx];
       if (!overlayURL) {
-        canvasCoverImage.style.opacity = 0;
+        overlayImage.style.opacity = 0;
         return;
       }
-      canvasCoverImage.style.opacity = state.opacity / 100;
-      canvasCoverImage.src = overlayURL;
+      overlayImage.style.opacity = state.opacity / 100;
+      overlayImage.src = overlayURL;
     };
-    
+
     /**
      * Creates a new empty DocumentFragment. DocumentFragments are lightweight and efficient
      * containers for temporary groupings of nodes. They improve performance by not forcing
@@ -302,6 +313,10 @@
     sliderContainer.appendChild(opacitySlider);
     buttonContainer.appendChild(sliderContainer);
 
+    // Append the fragment to the page
+    const shadowMainContainer = document
+      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+      .shadowRoot.querySelector("div.layout");
     shadowMainContainer.appendChild(fragment);
 
     // Render the overlay once on load
