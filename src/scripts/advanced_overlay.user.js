@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         r/place 2023 Canada Overlay with German tiles
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Script that adds a button to toggle an hardcoded image shown in the 2023's r/place canvas
 // @author       max-was-here and placeDE Devs
 // @match        https://garlic-bread.reddit.com/embed*
@@ -194,6 +194,28 @@
     return opacitySlider;
   }
 
+  function exportScreenshot() {
+    const canvas = document
+      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+      .shadowRoot.querySelector(".layout")
+      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
+      .shadowRoot.querySelector(".container")
+      .querySelector("canvas");
+    if (!canvas) {
+      console.error("Canvas not found");
+      return;
+    }
+    const imgUrl = canvas
+      .toDataURL('image/png');
+
+    const downloadEl = document
+      .createElement('a');
+    downloadEl.href = imgUrl;
+    downloadEl.download = 'place.png';
+    downloadEl.click();
+    downloadEl.remove();
+  }
+
   /**
    * Main function that runs the script. It is called when the page is loaded. It gets the state
    * from localStorage, creates the canvas cover image, the switcher button and the opacity
@@ -260,6 +282,24 @@
      * @see https://developer.mozilla.org/de/docs/Web/API/Document/createDocumentFragment
      */
     const fragment = document.createDocumentFragment();
+
+    //---------------------------------------------------------------------------------------------
+    // Setup export button
+    //---------------------------------------------------------------------------------------------
+    const EXPORT_BUTTON_CONTAINER_STYLE = {
+      position: "absolute",
+      bottom: "25px",
+      left: "25px",
+    };
+    const exportButtonContainer = applyStyles(
+      document.createElement("div"),
+      EXPORT_BUTTON_CONTAINER_STYLE
+    );
+    const exportButton = document.createElement("button");
+    exportButton.textContent = "Screenshot";
+    exportButton.onclick = exportScreenshot;
+    exportButtonContainer.appendChild(exportButton);
+    fragment.appendChild(exportButtonContainer);
 
     //---------------------------------------------------------------------------------------------
     // Setup switcher button
