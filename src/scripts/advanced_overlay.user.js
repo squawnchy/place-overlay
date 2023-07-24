@@ -205,6 +205,12 @@
     downloadEl.remove();
   }
 
+  function exportScreenshotPeriodically(canvas, interval) {
+    return setInterval(() => {
+      exportScreenshot(canvas);
+    }, interval);
+  }
+
   function getCanvas() {
     const canvas = document
       .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
@@ -310,6 +316,37 @@
     };
     exportButtonContainer.appendChild(exportButton);
     fragment.appendChild(exportButtonContainer);
+
+    const EXPORT_BUTTON_INTERVAL_CONTAINER_STYLE = {
+      position: "absolute",
+      bottom: "25px",
+      left: "125px",
+    };
+    const exportButtonIntervalContainer = applyStyles(
+      document.createElement("div"),
+      EXPORT_BUTTON_INTERVAL_CONTAINER_STYLE
+    );
+    const exportButtonInterval = document.createElement("select");
+    [0, 5, 10, 15, 30, 60].forEach((seconds) => {
+      const option = document.createElement("option");
+      option.value = seconds;
+      if (seconds === 0) {
+        option.textContent = "Screenshot nicht automatisch machen";
+        exportButtonInterval.appendChild(option);
+        return;
+      }
+      option.textContent = "Screenshot alle " + seconds + " Sekunden machen";
+      exportButtonInterval.appendChild(option);
+    });
+    exportButtonInterval.onchange = () => {
+      exportScreenshot(canvas);
+      exportScreenshotPeriodically(canvas, exportButtonInterval.value * 1000);
+      exportButtonInterval.disabled = true;
+      exportButtonInterval.innerText = "Screenshot wird alle " + exportButtonInterval.value + " Sekunden gemacht. Neu laden um zu stoppen.";
+    };
+
+    exportButtonIntervalContainer.appendChild(exportButtonInterval);
+    fragment.appendChild(exportButtonIntervalContainer);
 
     //---------------------------------------------------------------------------------------------
     // Setup switcher button
