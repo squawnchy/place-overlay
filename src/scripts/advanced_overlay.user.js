@@ -194,7 +194,18 @@
     return opacitySlider;
   }
 
-  function exportScreenshot() {
+  function exportScreenshot(canvas) {
+    const imgUrl = canvas
+      .toDataURL('image/png');
+
+    const downloadEl = document.createElement('a');
+    downloadEl.href = imgUrl;
+    downloadEl.download = 'place.'+ Date.now() +'.png';
+    downloadEl.click();
+    downloadEl.remove();
+  }
+
+  function getCanvas() {
     const canvas = document
       .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
       .shadowRoot.querySelector(".layout")
@@ -205,15 +216,20 @@
       console.error("Canvas not found");
       return;
     }
-    const imgUrl = canvas
-      .toDataURL('image/png');
+    return canvas;
+  }
 
-    const downloadEl = document
-      .createElement('a');
-    downloadEl.href = imgUrl;
-    downloadEl.download = 'place.png';
-    downloadEl.click();
-    downloadEl.remove();
+  function getCanvasContainer() {
+    const canvasContainer = document
+      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
+      .shadowRoot.querySelector(".layout")
+      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
+      .shadowRoot.querySelector(".container");
+    if (!canvasContainer) {
+      console.error("Canvas container not found");
+      return;
+    }
+    return canvasContainer;
   }
 
   /**
@@ -230,16 +246,8 @@
     //---------------------------------------------------------------------------------------------
     // Setup canvas cover image
     //---------------------------------------------------------------------------------------------
-    const canvasContainer = document
-      .querySelector(CANVAS_MAIN_CONTAINER_SELECTOR)
-      .shadowRoot.querySelector(".layout")
-      .querySelector(CANVAS_MAIN_CONTAINER_SHADOW_ROOT_SELECTOR)
-      .shadowRoot.querySelector(".container");
-    const canvas = canvasContainer.querySelector("canvas");
-    if (!canvas) {
-      console.error("Canvas not found");
-      return;
-    }
+    const canvasContainer = getCanvasContainer();
+    const canvas = getCanvas();
 
     const overlayImage = createOverlayImage(state);
     // Adjust the overlay image to the canvas size
@@ -297,7 +305,9 @@
     );
     const exportButton = document.createElement("button");
     exportButton.textContent = "Screenshot";
-    exportButton.onclick = exportScreenshot;
+    exportButton.onclick = () => {
+      exportScreenshot(canvas);
+    };
     exportButtonContainer.appendChild(exportButton);
     fragment.appendChild(exportButtonContainer);
 
